@@ -1,0 +1,19 @@
+[package]
+name = "divvunspell-nodejs"
+version = "0.1.0"
+authors = ["Brendan Molloy <brendan@technocreatives.com>"]
+license = "MIT"
+edition = "2018"
+build = "build.rs"
+exclude = ["artifacts.json", "index.node"]
+
+[lib]
+name = "divvunspell_nodejs"
+crate-type = ["dylib"]
+
+[build-dependencies]
+neon-build = "0.2.0"
+
+[dependencies]
+neon = "0.2.0"
+divvunspell = { git = "https://github.com/divvun/divvunspell" }
