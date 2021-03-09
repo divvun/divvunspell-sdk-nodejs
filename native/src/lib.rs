@@ -1,22 +1,19 @@
-#[macro_use]
-extern crate neon;
-
-use std::sync::Arc;
+use std::{path::Path, sync::Arc};
 use neon::prelude::*;
 use divvunspell::speller::SpellerConfig;
-use divvunspell::archive::SpellerArchive;
+use divvunspell::archive::{SpellerArchive, ZipSpellerArchive};
 
 pub struct SpellChecker {
-    archive: Arc<SpellerArchive>
+    archive: Arc<ZipSpellerArchive>
 }
 
 struct JsIsCorrectTask {
-    archive: Arc<SpellerArchive>,
+    archive: Arc<ZipSpellerArchive>,
     word: String
 }
 
 impl JsIsCorrectTask {
-    pub fn new(archive: Arc<SpellerArchive>, word: String) -> Self {
+    pub fn new(archive: Arc<ZipSpellerArchive>, word: String) -> Self {
         Self { archive, word }
     }
 }
@@ -36,12 +33,12 @@ impl Task for JsIsCorrectTask {
 }
 
 struct JsSuggestTask {
-    archive: Arc<SpellerArchive>,
+    archive: Arc<ZipSpellerArchive>,
     word: String
 }
 
 impl JsSuggestTask {
-    pub fn new(archive: Arc<SpellerArchive>, word: String) -> Self {
+    pub fn new(archive: Arc<ZipSpellerArchive>, word: String) -> Self {
         Self { archive, word }
     }
 }
@@ -52,13 +49,11 @@ impl Task for JsSuggestTask {
     type JsEvent = JsArray;
 
     fn perform(&self) -> Result<Self::Output, Self::Error> {
-        let cfg = SpellerConfig {
-            max_weight: None,
-            n_best: Some(10),
-            beam: None,
-            with_caps: true
-        };
-        Ok(self.archive.speller().suggest_with_config(&self.word, &cfg).into_iter().map(|w| w.value).collect())
+        let cfg = SpellerConfig::default();
+        Ok(self.archive.speller()
+            .suggest_with_config(&self.word, &cfg)
+            .into_iter().map(|w| w.value.to_string())
+            .collect())
     }
 
     fn complete(self, mut ctx: TaskContext, result: Result<Self::Output, Self::Error>) -> JsResult<Self::JsEvent> {
@@ -76,9 +71,9 @@ declare_types! {
     pub class JsSpellChecker for SpellChecker {
         init(mut ctx) {
             let zhfst_path: Handle<JsString> = ctx.argument::<JsString>(0)?;
-            let archive = match SpellerArchive::new(&zhfst_path.value()) {
+            let archive = match ZipSpellerArchive::open(&Path::new(&zhfst_path.value())) {
                 Ok(v) => Arc::new(v),
-                Err(e) => panic!(e)
+                Err(e) => panic!("{:?}", e)
             };
 
             Ok(SpellChecker { archive })
@@ -125,7 +120,11 @@ declare_types! {
                 x.archive.clone()
             };
 
-            Ok(ctx.string(&archive.metadata().info.locale).upcast())
+            if let Some(meta) = archive.metadata() {
+                Ok(ctx.string(&meta.info.locale).upcast())
+            } else {
+                Ok(ctx.null().upcast())
+            }
         }
 
         method localeName(mut ctx) {
@@ -137,15 +136,17 @@ declare_types! {
                 x.archive.clone()
             };
 
-            let locale = &archive.metadata().info.locale;
-            let name = archive.metadata().info.title
-                .iter()
-                .find(|x| x.lang.as_ref().map(|l| l == locale).unwrap_or(false))
-                .map(|x| x.value.to_string())
-                .unwrap_or(archive.metadata().info.title[0].value.to_string());
-
-
-            Ok(ctx.string(name).upcast())
+            if let Some(meta) = archive.metadata() {
+                let locale = &meta.info.locale;
+                let name = meta.info.title
+                    .iter()
+                    .find(|x| x.lang.as_ref().map(|l| l == locale).unwrap_or(false))
+                    .map(|x| x.value.to_string())
+                    .unwrap_or(meta.info.title[0].value.to_string());
+                Ok(ctx.string(name).upcast())
+            } else {
+                Ok(ctx.null().upcast())
+            }
         }
     }
 }

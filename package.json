@@ -5,10 +5,10 @@
   "main": "lib/index.js",
   "author": "Brendan Molloy <brendan@bbqsrc.net>",
   "license": "MIT OR Apache-2.0",
-  "dependencies": {
-    "neon-cli": "^0.2.0"
-  },
   "scripts": {
     "install": "neon build --release"
+  },
+  "devDependencies": {
+    "neon-cli": "^0.7.1"
   }
 }
