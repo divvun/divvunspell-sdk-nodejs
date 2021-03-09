@@ -12,8 +12,8 @@ name = "divvunspell_nodejs"
 crate-type = ["dylib"]
 
 [build-dependencies]
-neon-build = "0.2.0"
+neon-build = "0.7"
 
 [dependencies]
-neon = "0.2.0"
-divvunspell = { git = "https://github.com/divvun/divvunspell" }
+neon = "0.7"
+divvunspell = { git = "https://github.com/divvun/divvunspell", branch = "main" }
