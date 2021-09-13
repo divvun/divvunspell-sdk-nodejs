@@ -50,7 +50,7 @@ checksum = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
 [[package]]
 name = "box-format"
 version = "0.3.0"
-source = "git+https://github.com/bbqsrc/box?branch=master#8b6602fac3013c326db27411766e84352a8a232c"
+source = "git+https://github.com/bbqsrc/box?branch=main#8b6602fac3013c326db27411766e84352a8a232c"
 dependencies = [
  "byteorder",
  "comde",
