@@ -16,4 +16,4 @@ neon-build = "0.7"
 
 [dependencies]
 neon = "0.7"
-divvunspell = { git = "https://github.com/divvun/divvunspell", branch = "main" }
+divvunspell = { git = "https://github.com/divvun/divvunspell", branch = "main", features = ["compression"] }
