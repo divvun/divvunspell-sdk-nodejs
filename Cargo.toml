@@ -1,0 +1,14 @@
+[package]
+name = "divvunspell-sdk-nodejs"
+version = "1.0.0"
+authors = ["Brendan Molloy <brendan@technocreatives.com>"]
+license = "MIT"
+edition = "2021"
+exclude = ["index.node"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+neon = "1"
+divvunspell = { git = "https://github.com/divvun/divvunspell", branch = "main", features = ["compression"] }

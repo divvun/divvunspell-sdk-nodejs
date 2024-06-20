@@ -1,14 +1,30 @@
 {
-  "name": "divvunspell",
-  "version": "0.1.0",
+  "name": "divvunspell-sdk-nodejs",
+  "version": "1.0.0",
   "description": "",
-  "main": "lib/index.js",
+  "main": "index.js",
   "author": "Brendan Molloy <brendan@bbqsrc.net>",
-  "license": "MIT OR Apache-2.0",
+  "license": "(MIT OR Apache-2.0)",
   "scripts": {
-    "install": "neon build --release"
+    "build": "cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
+    "install": "npm run build",
+    "test": "mocha"
   },
   "devDependencies": {
-    "neon-cli": "^0.7.1"
-  }
+    "cargo-cp-artifact": "^0.1",
+    "mocha": "^10.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/divvun/divvunspell-sdk-nodejs.git"
+  },
+  "keywords": [
+    "Divvun",
+    "Spellchecker",
+    "hfst"
+  ],
+  "bugs": {
+    "url": "https://github.com/divvun/divvunspell-sdk-nodejs/issues"
+  },
+  "homepage": "https://github.com/divvun/divvunspell-sdk-nodejs#readme"
 }
